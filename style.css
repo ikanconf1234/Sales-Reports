@@ -42,8 +42,27 @@ body {
 }
 
 .hero-overlay {
+  position: relative;
+  overflow: hidden;
   padding: 34px 24px;
   color: white;
+}
+
+.hero-overlay > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-overlay::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: min(240px, 34vw);
+  height: 86px;
+  background: url("ikan-logo-2025.png") center / contain no-repeat;
+  opacity: 0.26;
+  pointer-events: none;
 }
 
 .brand {
@@ -58,16 +77,6 @@ body {
   text-transform: uppercase;
 }
 
-.brand::before {
-  content: "";
-  display: inline-block;
-  width: 112px;
-  height: 36px;
-  flex: 0 0 auto;
-  border-radius: 4px;
-  background: #ffffff url("ikan-logo-2025.png") center / contain no-repeat;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
-}
 
 h1 {
   margin: 0;
