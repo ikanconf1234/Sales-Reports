@@ -43,7 +43,7 @@ if (dashboardSubtitle && DASHBOARD_SALESPERSON) dashboardSubtitle.textContent = 
 if (reportTitle && REPORT_SALESPERSON) reportTitle.textContent = `${REPORT_SALESPERSON} - Submitted Visits`;
 if (form?.elements.date) form.elements.date.value = new Date().toISOString().slice(0, 10);
 
-seedSampleRecords();
+removeSampleRecords();
 renderSubmissions();
 renderDashboard();
 
@@ -117,121 +117,17 @@ function exportResponsesExcel(records) {
   filter?.addEventListener("change", () => { renderSubmissions(); renderDashboard(); });
 });
 
-function seedSampleRecords() {
-  if ((!tableBody && !dashboardTableBody) || localStorage.getItem(STORAGE_KEY)) return;
-
-  const sampleRecords = [
-    {
-      salespersonName: "ESSAM",
-      timestamp: "2026-07-06T08:15:00.000Z",
-      email: "Ikanconf@gmail.com",
-      date: "2026-07-06",
-      companyName: "Al Noor Contracting LLC",
-      companyType: "Main Contractor",
-      personName: "Ahmed Khan",
-      designation: "Procurement Manager",
-      contactNumber: "+971 50 111 2233",
-      emailId: "ahmed@alnoor.example",
-      meetingType: "Follow-up Required",
-      description: "Discussed waterproofing material approval for villa project. Client requested technical datasheet and price confirmation.",
-      remarks: "Call again after two days. Pending consultant approval.",
-      latitude: "25.204849",
-      longitude: "55.270783",
-      googleMapsLink: "https://www.google.com/maps?q=25.204849,55.270783"
-    },
-    {
-      salespersonName: "ADIL",
-      timestamp: "2026-07-06T09:30:00.000Z",
-      email: "Ikanconf@gmail.com",
-      date: "2026-07-06",
-      companyName: "Prime Fit-Out Interiors",
-      companyType: "Fit-Out Contractor",
-      personName: "Ramesh Pillai",
-      designation: "Project Engineer",
-      contactNumber: "+971 55 222 3344",
-      emailId: "ramesh@primefitout.example",
-      meetingType: "Sample Requested",
-      description: "Engineer requested stone adhesive sample and product profile for current hotel renovation work.",
-      remarks: "Sample to be delivered tomorrow morning.",
-      latitude: "25.118937",
-      longitude: "55.200814",
-      googleMapsLink: "https://www.google.com/maps?q=25.118937,55.200814"
-    },
-    {
-      salespersonName: "JENNY",
-      timestamp: "2026-07-05T11:10:00.000Z",
-      email: "Ikanconf@gmail.com",
-      date: "2026-07-05",
-      companyName: "Blue Line Marble Factory",
-      companyType: "Marble Factory",
-      personName: "Mohammed Faisal",
-      designation: "Factory Supervisor",
-      contactNumber: "+971 52 333 4455",
-      emailId: "faisal@blueline.example",
-      meetingType: "Quotation Requested",
-      description: "Factory requires quotation for bulk supply of polishing and installation materials.",
-      remarks: "Send quotation for 50 units and 100 units separately.",
-      latitude: "25.276987",
-      longitude: "55.296249",
-      googleMapsLink: "https://www.google.com/maps?q=25.276987,55.296249"
-    },
-    {
-      salespersonName: "ESSAM",
-      timestamp: "2026-07-04T13:45:00.000Z",
-      email: "Ikanconf@gmail.com",
-      date: "2026-07-04",
-      companyName: "Urban Heights Developer",
-      companyType: "Developer",
-      personName: "Sarah Thomas",
-      designation: "Purchase Head",
-      contactNumber: "+971 56 444 5566",
-      emailId: "sarah@urbanheights.example",
-      meetingType: "LPO Expected",
-      description: "Final commercial discussion completed. Purchase team confirmed LPO is under internal approval.",
-      remarks: "Expected LPO this week.",
-      latitude: "25.197197",
-      longitude: "55.274376",
-      googleMapsLink: "https://www.google.com/maps?q=25.197197,55.274376"
-    },
-    {
-      salespersonName: "ADIL",
-      timestamp: "2026-07-03T07:55:00.000Z",
-      email: "Ikanconf@gmail.com",
-      date: "2026-07-03",
-      companyName: "Green Scape Landscaping",
-      companyType: "Landscape Contractor",
-      personName: "Naveen Kumar",
-      designation: "Operations Manager",
-      contactNumber: "+971 58 555 6677",
-      emailId: "naveen@greenscape.example",
-      meetingType: "Order Received",
-      description: "Confirmed order for flooring material and waterproof coating for outdoor area.",
-      remarks: "Delivery requested before Friday.",
-      latitude: "25.065700",
-      longitude: "55.171280",
-      googleMapsLink: "https://www.google.com/maps?q=25.065700,55.171280"
-    },
-    {
-      salespersonName: "AJAY",
-      timestamp: "2026-07-02T12:20:00.000Z",
-      email: "Ikanconf@gmail.com",
-      date: "2026-07-02",
-      companyName: "Metro Building Materials Trading",
-      companyType: "Building Materials Trading Company",
-      personName: "Joseph Mathew",
-      designation: "Sales Director",
-      contactNumber: "+971 50 777 8899",
-      emailId: "joseph@metrotrading.example",
-      meetingType: "Technical Discussion",
-      description: "Discussed compatibility of IKAN products with existing site specification and installation process.",
-      remarks: "Technical team to review method statement.",
-      latitude: "25.229762",
-      longitude: "55.289311",
-      googleMapsLink: "https://www.google.com/maps?q=25.229762,55.289311"
-    }
-  ];
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleRecords));
+function removeSampleRecords() {
+  const sampleCompanies = new Set([
+    "Al Noor Contracting LLC",
+    "Prime Fit-Out Interiors",
+    "Blue Line Marble Factory",
+    "Urban Heights Developer",
+    "Green Scape Landscaping",
+    "Metro Building Materials Trading"
+  ]);
+  const realRecords = getSubmissions().filter((record) => !sampleCompanies.has(record.companyName));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(realRecords));
 }
 function captureGps() {
   return new Promise((resolve, reject) => {
