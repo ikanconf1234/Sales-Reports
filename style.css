@@ -47,12 +47,26 @@ body {
 }
 
 .brand {
-  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
   color: #ffd6dc;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+
+.brand::before {
+  content: "";
+  display: inline-block;
+  width: 112px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  background: #ffffff url("ikan-logo-2025.png") center / contain no-repeat;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
 }
 
 h1 {
