@@ -1,4 +1,4 @@
-﻿// Default name. Private links can override this with ?salesperson=ADIL, ?salesperson=JENNY, ?salesperson=ESSAM, or ?salesperson=AJAY.
+// Default name. Private links can override this with ?salesperson=ADIL, ?salesperson=JENNY, ?salesperson=ESSAM, or ?salesperson=AJAY.
 const DEFAULT_SALESPERSON_NAME = "ESSAM";
 const urlParams = new URLSearchParams(window.location.search);
 const pageSalesperson = document.body.dataset.salesperson || urlParams.get("salesperson") || DEFAULT_SALESPERSON_NAME;
@@ -15,7 +15,6 @@ const form = document.getElementById("visitForm");
 const message = document.getElementById("message");
 const tableBody = document.getElementById("submissionTable");
 const submitButton = document.getElementById("submitButton");
-const clearButton = document.getElementById("clearButton");
 const exportResponsesExcelButton = document.getElementById("exportResponsesExcelButton");
 const exportResponsesPdfButton = document.getElementById("exportResponsesPdfButton");
 const searchFilter = document.getElementById("searchFilter");
@@ -112,22 +111,6 @@ function exportResponsesExcel(records) {
   link.click();
   URL.revokeObjectURL(link.href);
 }
-clearButton?.addEventListener("click", () => {
-  const allSubmissions = getSubmissions();
-  const visibleSubmissions = getFilteredSubmissions(allSubmissions);
-  if (!visibleSubmissions.length) return;
-
-  const confirmMessage = hasActiveFilter()
-    ? "Clear only the currently filtered submitted visits?"
-    : "Clear all submitted visits saved in this browser?";
-
-  if (!confirm(confirmMessage)) return;
-
-  const visibleKeys = new Set(visibleSubmissions.map(getRecordKey));
-  const remaining = allSubmissions.filter((record) => !visibleKeys.has(getRecordKey(record)));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
-  renderSubmissions();
-});
 
 [searchFilter, companyFilter, personFilter, dateFilter, typeFilter, salespersonFilter, companyTypeFilter].forEach((filter) => {
   filter?.addEventListener("input", () => { renderSubmissions(); renderDashboard(); });

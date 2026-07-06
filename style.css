@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --ikan-red: #c41230;
   --ikan-black: #111111;
   --ikan-blue: #1a73e8;
@@ -218,12 +218,6 @@ button:disabled {
   align-items: center;
 }
 
-#clearButton {
-  flex: 0 0 auto;
-  background: var(--ikan-black);
-  padding: 10px 14px;
-  font-size: 13px;
-}
 
 
 .filters {
@@ -294,9 +288,6 @@ a {
     margin-top: 12px;
   }
 
-  #clearButton {
-    margin-top: 0;
-  }
 
   .report-link {
     display: block;
