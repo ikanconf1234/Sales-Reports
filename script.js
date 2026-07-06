@@ -40,7 +40,7 @@ const formTitle = document.getElementById("formTitle");
 if (formTitle) formTitle.textContent = `${SALESPERSON_NAME} - DAILY SALES VISIT UPDATE`;
 if (dashboardTitle && dashboardRole) dashboardTitle.textContent = DASHBOARD_SALESPERSON ? `${DASHBOARD_SALESPERSON} Dashboard` : `Visit Submission Reports`;
 if (dashboardSubtitle && DASHBOARD_SALESPERSON) dashboardSubtitle.textContent = `${DASHBOARD_SALESPERSON} Submitted Visits`;
-if (reportTitle && REPORT_SALESPERSON) reportTitle.textContent = `${REPORT_SALESPERSON} - Submitted Visits`;
+if (reportTitle && REPORT_SALESPERSON) reportTitle.textContent = `${REPORT_SALESPERSON} - Visit Submission Reports`;
 if (form?.elements.date) form.elements.date.value = new Date().toISOString().slice(0, 10);
 
 removeSampleRecords();
