@@ -1,0 +1,106 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Sales Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-dashboard-role="Sales">
+    <main class="dashboard-page">
+      <section class="hero compact-hero">
+        <div class="hero-overlay">
+          <p class="brand">IKAN Sales Team</p>
+          <h1 id="dashboardTitle">All Sales Dashboard</h1>
+          <p class="quote">All submitted sales visit records in one view.</p>
+        </div>
+      </section>
+
+      <section class="dashboard-card">
+        <div class="dashboard-topbar">
+          <div>
+            <h2 id="dashboardSubtitle">All Sales Submitted Records</h2>
+            <p>Filter by salesperson, date, company type, meeting type, or search any record detail.</p>
+          </div>
+          <div class="dashboard-actions">
+            <a class="report-link dark" href="person-links.html">Back to Links</a>
+            <button id="exportExcelButton" type="button">Export Excel</button>
+            <button id="exportPdfButton" type="button">Export PDF</button>
+          </div>
+        </div>
+
+        <div class="filters dashboard-filters">
+          <input id="searchFilter" type="search" placeholder="Search" />
+          <select id="salespersonFilter">
+            <option value="">All Salespeople</option>
+            <option>ADIL</option>
+            <option>JENNY</option>
+            <option>ESSAM</option>
+            <option>AJAY</option>
+          </select>
+          <input id="dateFilter" type="date" />
+          <select id="companyTypeFilter">
+            <option value="">All Company Types</option>
+            <option>Client / Owner</option>
+            <option>Consultant</option>
+            <option>Main Contractor</option>
+            <option>Sub-Contractor</option>
+            <option>Developer</option>
+            <option>Project Management Consultant (PMC)</option>
+            <option>Fit-Out Contractor</option>
+            <option>Marble Factory</option>
+            <option>Stone Factory</option>
+            <option>Tile Factory</option>
+            <option>Fabricator</option>
+            <option>Applicator / Installer</option>
+            <option>Building Materials Supplier</option>
+            <option>Building Materials Trading Company</option>
+            <option>Waterproofing Contractor</option>
+            <option>Flooring Contractor</option>
+            <option>Landscape Contractor</option>
+            <option>Facility Management Company</option>
+          </select>
+          <select id="typeFilter">
+            <option value="">All Meeting Types</option>
+            <option>New Lead</option>
+            <option>Follow-up Required</option>
+            <option>Sample Requested</option>
+            <option>Quotation Requested</option>
+            <option>Technical Discussion</option>
+            <option>LPO Expected</option>
+            <option>Order Received</option>
+            <option>N/A</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table id="dashboardTable">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Salesperson</th>
+                <th>Company</th>
+                <th>Company Type</th>
+                <th>Person</th>
+                <th>Designation</th>
+                <th>Contact</th>
+                <th>Email ID</th>
+                <th>Meeting Type</th>
+                <th>Details</th>
+                <th>Remarks</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Map</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+

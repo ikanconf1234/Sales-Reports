@@ -1,0 +1,102 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submitted Visits</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-report-salesperson="ESSAM">
+    <main class="page">
+      <section class="hero compact-hero">
+        <div class="hero-overlay">
+          <p class="brand">IKAN Sales Team</p>
+          <h1 id="reportTitle">Submitted Visits</h1>
+          <p class="quote">Building Relationships. Delivering Solutions. Driving Growth.</p>
+        </div>
+      </section>
+
+      <section class="table-card">
+        <div class="table-header">
+          <div>
+            <h2>Submitted Visits</h2>
+
+          </div>
+          <div class="table-actions">
+            <a class="report-link dark" href="essam-form.html">Back to My Form</a>
+            <button id="exportResponsesExcelButton" type="button">Export Excel</button>
+            <button id="exportResponsesPdfButton" type="button">Export PDF</button>
+            <button id="clearButton" type="button">Clear List</button>
+          </div>
+        </div>        <div class="filters response-filters">
+          <input id="searchFilter" type="search" placeholder="Search" />
+          <input id="companyFilter" type="search" placeholder="Company name" />
+          <input id="personFilter" type="search" placeholder="Person name" />
+          <input id="dateFilter" type="date" />
+          <select id="companyTypeFilter">
+            <option value="">All Company Types</option>
+            <option>Client / Owner</option>
+            <option>Consultant</option>
+            <option>Main Contractor</option>
+            <option>Sub-Contractor</option>
+            <option>Developer</option>
+            <option>Project Management Consultant (PMC)</option>
+            <option>Fit-Out Contractor</option>
+            <option>Marble Factory</option>
+            <option>Stone Factory</option>
+            <option>Tile Factory</option>
+            <option>Fabricator</option>
+            <option>Applicator / Installer</option>
+            <option>Building Materials Supplier</option>
+            <option>Building Materials Trading Company</option>
+            <option>Waterproofing Contractor</option>
+            <option>Flooring Contractor</option>
+            <option>Landscape Contractor</option>
+            <option>Facility Management Company</option>
+          </select>
+          <select id="typeFilter">
+            <option value="">All Meeting Types</option>
+            <option>New Lead</option>
+            <option>Follow-up Required</option>
+            <option>Sample Requested</option>
+            <option>Quotation Requested</option>
+            <option>Technical Discussion</option>
+            <option>LPO Expected</option>
+            <option>Order Received</option>
+            <option>N/A</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Salesperson</th>
+                <th>Company</th>
+                <th>Person</th>
+                <th>Meeting Type</th>
+                <th>Details</th>
+                <th>Remarks</th>
+                <th>Map</th>
+              </tr>
+            </thead>
+            <tbody id="submissionTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,119 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Sales Visit Update</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-salesperson="ADIL">
+    <main class="page">
+      <section class="hero">
+        <div class="hero-overlay">
+          <p class="brand">IKAN Sales Team</p>
+          <h1 id="formTitle">ESSAM - DAILY SALES VISIT UPDATE</h1>
+          <p class="quote">Building Relationships. Delivering Solutions. Driving Growth.</p>
+        </div>
+      </section>
+
+      <form id="visitForm" class="form-card">
+        <label>
+          Email
+          <input type="email" name="email" value="Ikanconf@gmail.com" readonly required />
+        </label>
+
+        <label>
+          Date
+          <input type="date" name="date" required />
+        </label>
+
+        <label>
+          Company Name
+          <input type="text" name="companyName" required />
+        </label>
+
+        <label>
+          Company Type
+          <select name="companyType" required>
+            <option value="">Choose</option>
+            <option>Client / Owner</option>
+            <option>Consultant</option>
+            <option>Main Contractor</option>
+            <option>Sub-Contractor</option>
+            <option>Developer</option>
+            <option>Project Management Consultant (PMC)</option>
+            <option>Fit-Out Contractor</option>
+            <option>Marble Factory</option>
+            <option>Stone Factory</option>
+            <option>Tile Factory</option>
+            <option>Fabricator</option>
+            <option>Applicator / Installer</option>
+            <option>Building Materials Supplier</option>
+            <option>Building Materials Trading Company</option>
+            <option>Waterproofing Contractor</option>
+            <option>Flooring Contractor</option>
+            <option>Landscape Contractor</option>
+            <option>Facility Management Company</option>
+          </select>
+        </label>
+
+        <label>
+          Person Name
+          <input type="text" name="personName" required />
+        </label>
+
+        <label>
+          Designation
+          <input type="text" name="designation" required />
+        </label>
+
+        <label>
+          Contact Number
+          <input type="tel" name="contactNumber" required />
+        </label>
+
+        <label>
+          Email ID
+          <input type="email" name="emailId" />
+        </label>
+
+        <label>
+          Meeting Type
+          <select name="meetingType" required>
+            <option value="">Choose</option>
+            <option>New Lead</option>
+            <option>Follow-up Required</option>
+            <option>Sample Requested</option>
+            <option>Quotation Requested</option>
+            <option>Technical Discussion</option>
+            <option>LPO Expected</option>
+            <option>Order Received</option>
+            <option>N/A</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label>
+          Description / Details
+          <small>Provide details related to the selected option above, if applicable.</small>
+          <textarea name="description" required></textarea>
+        </label>
+
+        <label>
+          Remarks
+          <textarea name="remarks"></textarea>
+        </label>
+
+        <div id="message" class="message" aria-live="polite"></div>
+
+        <button id="submitButton" type="submit">Submit</button>
+      </form>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
+
+
+
