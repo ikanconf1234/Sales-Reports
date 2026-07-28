@@ -4,10 +4,9 @@ const urlParams = new URLSearchParams(window.location.search);
 const pageSalesperson = document.body.dataset.salesperson || urlParams.get("salesperson") || DEFAULT_SALESPERSON_NAME;
 const SALESPERSON_NAME = pageSalesperson.trim().toUpperCase();
 
-// Future Google Sheets/API connection:
-// Replace this empty value with your deployed Google Apps Script Web App URL.
-// The submit handler already calls sendToBackend(record), so only that function needs updating.
-const GOOGLE_SHEETS_API_URL = "PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+// Shared server used by every form and dashboard device.
+const SHARED_API_URL = "https://ikan-sales-reports-storage.ikaninc.chatgpt.site/api/submissions";
+const REQUEST_TIMEOUT_MS = 15000;
 
 const STORAGE_KEY = "daily-sales-visit-update-submissions";
 
@@ -44,11 +43,14 @@ if (reportTitle && REPORT_SALESPERSON) reportTitle.textContent = `${REPORT_SALES
 if (form?.elements.date) form.elements.date.value = new Date().toISOString().slice(0, 10);
 
 removeSampleRecords();
+prepareLocalSubmissions();
 renderSubmissions();
 renderDashboard();
+void synchronizeSubmissions();
 
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
+  let recordSavedLocally = false;
   showMessage("", "");
   submitButton.disabled = true;
   submitButton.textContent = "Getting location...";
@@ -60,6 +62,7 @@ form?.addEventListener("submit", async (event) => {
     const formData = Object.fromEntries(new FormData(form).entries());
     const timestamp = new Date().toISOString();
     const record = {
+      recordId: createRecordId(timestamp),
       salespersonName: SALESPERSON_NAME,
       timestamp,
       ...formData,
@@ -69,13 +72,17 @@ form?.addEventListener("submit", async (event) => {
     };
 
     saveRecord(record);
+    recordSavedLocally = true;
     await sendToBackend(record);
+    markRecordSynced(record.recordId);
     renderSubmissions();
     form.reset();
     if (form?.elements.date) form.elements.date.value = new Date().toISOString().slice(0, 10);
     showMessage("success", "Thank you. Your sales visit update has been submitted successfully.");
+    void refreshFromBackend();
   } catch (error) {
-    showMessage("error", error.message || "Location permission is required to submit this sales visit.");
+    const retryNote = recordSavedLocally ? " Your entry is saved on this device and will retry automatically." : "";
+    showMessage("error", (error.message || "Location permission is required to submit this sales visit.") + retryNote);
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Submit";
@@ -154,30 +161,116 @@ function captureGps() {
 }
 
 function saveRecord(record) {
-  const submissions = getSubmissions();
-  submissions.unshift(record);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+  const prepared = { ...record, recordId: record.recordId || createLegacyRecordId(record), _synced: false };
+  const submissions = getSubmissions().filter((item) => getRecordId(item) !== prepared.recordId);
+  submissions.unshift(prepared);
+  setSubmissions(submissions);
 }
 
 function getSubmissions() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    const records = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(records) ? records : [];
   } catch {
     return [];
   }
 }
 
-async function sendToBackend(record) {
-  if (!GOOGLE_SHEETS_API_URL || GOOGLE_SHEETS_API_URL.includes("PASTE_GOOGLE_APPS_SCRIPT")) return;
+function setSubmissions(records) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
 
-  await fetch(GOOGLE_SHEETS_API_URL, {
+function prepareLocalSubmissions() {
+  const prepared = getSubmissions().map((record) => ({
+    ...record,
+    recordId: getRecordId(record),
+    _synced: Boolean(record._synced)
+  }));
+  setSubmissions(prepared);
+}
+
+function createRecordId(timestamp) {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `visit-${timestamp}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function createLegacyRecordId(record) {
+  const source = getRecordKey(record);
+  let hash = 2166136261;
+  for (let index = 0; index < source.length; index += 1) {
+    hash ^= source.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `legacy-${(hash >>> 0).toString(36)}`;
+}
+
+function getRecordId(record) {
+  return record.recordId || createLegacyRecordId(record);
+}
+
+function markRecordSynced(recordId) {
+  setSubmissions(getSubmissions().map((record) =>
+    getRecordId(record) === recordId ? { ...record, recordId, _synced: true } : record
+  ));
+}
+
+async function requestSharedApi(url, options = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || payload.ok === false) {
+      throw new Error(payload.error || "The shared server could not save this visit.");
+    }
+    return payload;
+  } catch (error) {
+    if (error.name === "AbortError") throw new Error("The shared server took too long to respond.");
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function sendToBackend(recordOrRecords) {
+  return requestSharedApi(SHARED_API_URL, {
     method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify(record)
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(recordOrRecords)
   });
+}
+
+async function refreshFromBackend() {
+  const salesperson = REPORT_SALESPERSON || DASHBOARD_SALESPERSON || (form ? SALESPERSON_NAME : "");
+  const apiUrl = new URL(SHARED_API_URL);
+  if (salesperson) apiUrl.searchParams.set("salesperson", salesperson);
+  const payload = await requestSharedApi(apiUrl.toString());
+  const remoteRecords = Array.isArray(payload.records) ? payload.records : [];
+  const remoteIds = new Set(remoteRecords.map(getRecordId));
+  const unsyncedLocal = getSubmissions().filter((record) => !remoteIds.has(getRecordId(record)));
+  const combined = [
+    ...remoteRecords.map((record) => ({ ...record, recordId: getRecordId(record), _synced: true })),
+    ...unsyncedLocal
+  ].sort((a, b) => String(b.timestamp || "").localeCompare(String(a.timestamp || "")));
+  setSubmissions(combined);
+  renderSubmissions();
+  renderDashboard();
+}
+
+async function synchronizeSubmissions() {
+  try {
+    const pending = getSubmissions().filter((record) => !record._synced);
+    if (pending.length) {
+      await sendToBackend(pending);
+      const pendingIds = new Set(pending.map(getRecordId));
+      setSubmissions(getSubmissions().map((record) =>
+        pendingIds.has(getRecordId(record)) ? { ...record, _synced: true } : record
+      ));
+    }
+    await refreshFromBackend();
+  } catch (error) {
+    console.warn("Shared sales reports are temporarily unavailable.", error);
+  }
 }
 
 function renderSubmissions() {
@@ -200,7 +293,7 @@ function renderSubmissions() {
           <td>${escapeHtml(record.meetingType || record.meetingOutcome)}</td>
           <td>${escapeHtml(record.description)}</td>
           <td>${escapeHtml(record.remarks)}</td>
-          <td><a href="${record.googleMapsLink}" target="_blank" rel="noreferrer">Open Map</a></td>
+          <td><a href="${safeMapLink(record)}" target="_blank" rel="noreferrer">Open Map</a></td>
         </tr>
       `
     )
@@ -243,7 +336,7 @@ function renderDashboard() {
           <td>${escapeHtml(record.remarks)}</td>
           <td>${escapeHtml(record.latitude)}</td>
           <td>${escapeHtml(record.longitude)}</td>
-          <td><a href="${record.googleMapsLink}" target="_blank" rel="noreferrer">Open Map</a></td>
+          <td><a href="${safeMapLink(record)}" target="_blank" rel="noreferrer">Open Map</a></td>
         </tr>
       `
     )
@@ -358,6 +451,13 @@ function showMessage(type, text) {
 
 function formatDateTime(value) {
   return new Date(value).toLocaleString();
+}
+
+function safeMapLink(record) {
+  const latitude = Number(record.latitude);
+  const longitude = Number(record.longitude);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return "#";
+  return `https://www.google.com/maps?q=${latitude},${longitude}`;
 }
 
 function escapeHtml(value) {
