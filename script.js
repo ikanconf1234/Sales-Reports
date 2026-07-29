@@ -247,7 +247,9 @@ async function refreshFromBackend() {
   const payload = await requestSharedApi(apiUrl.toString());
   const remoteRecords = Array.isArray(payload.records) ? payload.records : [];
   const remoteIds = new Set(remoteRecords.map(getRecordId));
-  const unsyncedLocal = getSubmissions().filter((record) => !remoteIds.has(getRecordId(record)));
+  const unsyncedLocal = getSubmissions().filter(
+    (record) => !record._synced && !remoteIds.has(getRecordId(record))
+  );
   const combined = [
     ...remoteRecords.map((record) => ({ ...record, recordId: getRecordId(record), _synced: true })),
     ...unsyncedLocal
